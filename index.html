@@ -13,7 +13,7 @@
 }
 
 body {
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+font-family: ‘Segoe UI’, Tahoma, Geneva, Verdana, sans-serif;
 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 min-height: 100vh;
 padding: 20px;
@@ -26,6 +26,24 @@ align-items: center;
 justify-content: center;
 min-height: 100vh;
 padding: 40px 20px;
+position: relative;
+}
+
+.welcome-badge-topleft {
+position: absolute;
+top: 30px;
+left: 30px;
+display: inline-flex;
+align-items: center;
+gap: 8px;
+background: rgba(255, 255, 255, 0.15);
+padding: 8px 16px;
+border-radius: 20px;
+font-size: 0.85em;
+font-weight: 600;
+backdrop-filter: blur(10px);
+color: white;
+border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .welcome-container {
@@ -121,7 +139,7 @@ gap: 10px;
 }
 
 .info-list li:before {
-content: "";
+content: “”;
 width: 8px;
 height: 8px;
 border-radius: 50%;
@@ -797,21 +815,42 @@ print-color-adjust: exact;
 }
 
 @media (max-width: 968px) {
+.welcome-screen {
+height: auto;
+min-height: 100vh;
+}
+
 .welcome-container {
 grid-template-columns: 1fr;
 gap: 40px;
+padding: 20px;
+height: auto;
+}
+
+.welcome-badge-topleft {
+position: static;
+margin-bottom: 20px;
 }
 
 .welcome-left h1 {
-font-size: 3em;
+font-size: 2.5em;
+}
+
+.welcome-left p {
+font-size: 1em;
 }
 
 .welcome-left {
 text-align: center;
+padding-right: 0;
 }
 
 .welcome-features {
 justify-content: center;
+}
+
+.welcome-right {
+max-width: 100%;
 }
 }
 
@@ -874,12 +913,13 @@ padding: 25px;
 <!-- Welcome Screen -->
 
 <div class="welcome-screen" id="welcomeScreen">
+  <div class="welcome-badge-topleft">
+    <span>🛡️</span>
+    <span>TRUSTED OT WORKFLOW</span>
+  </div>
+
   <div class="welcome-container">
     <div class="welcome-left">
-      <div class="welcome-badge">
-        <span>🛡️</span>
-        <span>TRUSTED OT WORKFLOW</span>
-      </div>
       <h1>Welcome to the OT Medication Tracker</h1>
       <p>Keep your operating theatre inventory organised, compliant, and ready for every procedure. Monitor stock levels, track expirations, and log patient withdrawals with medical-grade precision.</p>
       <div class="welcome-features">
@@ -894,6 +934,7 @@ padding: 25px;
       </div>
     </div>
 
+```
 <div class="welcome-right">
   <div class="info-box">
     <p>This tool streamlines medication handling from stocking to withdrawal and return, ensuring traceability and accountability across your theatre team.</p>
@@ -923,6 +964,7 @@ padding: 25px;
   
   <p class="tip-text">Tip: Staff identity will be attached to every withdrawal and return log during this session.</p>
 </div>
+```
 
   </div>
 </div>
@@ -945,6 +987,7 @@ padding: 25px;
       </div>
     </div>
 
+```
 <div class="content">
   <button class="add-med-toggle" onclick="toggleAddMedication()">
     <span>➕ Add New Medication</span>
@@ -1021,6 +1064,7 @@ padding: 25px;
     </div>
   </div>
 </div>
+```
 
   </div>
 </div>
@@ -1082,23 +1126,127 @@ let currentStaffName = '';
 let currentStaffID = '';
 const DELETE_PASSWORD = 'De2255';
 
+// Authorized staff list
+const AUTHORIZED_STAFF = {
+  '29827': 'Ahmed Hamood Salim Al-Ghawi',
+  '33279': 'Samiya Ali Said Al-Wardi',
+  '34545': 'Said Salim Hamed Al-Shaqsi',
+  '37571': 'Mohammed Zaher Khalid Ambosaidi',
+  '39523': 'Aiysha Khalifah Sulieman Al-Oufi',
+  '43108': 'Shamsa Hamed Musabah Al-Harasi',
+  '43127': 'Said Rashid Hamed Al-Gamoodi',
+  '45517': 'Muna Khalfan Salim Al-Hashemi',
+  '45543': 'Mariyam Hamed Hamood Al-Duhli',
+  '45550': 'Shamsa Masoud Hamed Al-Busaidi',
+  '45556': 'Khamis Said Khamis Al-Suleimani',
+  '47596': 'Rahma Ali Mohammed Al-Harassi',
+  '47614': 'Fatma Abdullah Saleh Al-Abadi',
+  '49726': 'Zahra Zahran Said Al-Nabhani',
+  '49750': 'Othman Hamdan Hamood Al-Harasi',
+  '51886': 'Asma Salim Rashid Al-Busaidi',
+  '51932': 'Mohammed  Nasser Hamed Al-Hashimi',
+  '54409': 'Mohammed Salim Sulieman Al-Harasi',
+  '56657': 'Azza Mohammed Zaher Al-Nabhani',
+  '56661': 'Amal Dhawi Salim Al-Gamoodi',
+  '56809': 'Liza Lara Yee',
+  '57241': 'Sheryl Jane Tamparong Senalde',
+  '58103': 'Talal Mohammed Said Al-Sulaiymi',
+  '58143': 'Mazin Khalifa Mohammed Al-Sheriyani',
+  '60913': 'Pamela Aguilar Viloria',
+  '60972': 'Kristine del Pilar Ruiz',
+  '61688': 'Fatma Said Al-Anqoudi',
+  '67415': 'Shamsa Saif Saleem Al-Riyami',
+  '67436': 'Mohammed Nasser Salem Al-Toobi',
+  '73443': 'Zainab Mohammed Mansoor Al-Agabari',
+  '73446': 'Sumaia Said Sulieman Al-toobi',
+  '73369': 'Marya Hamed Muhammed Al-Hesinia',
+  '74705': 'Huda Abdulla Ali AlGafri',
+  '74635': 'Raiya Humaid Abdullah Al-Shuriqi',
+  '75412': 'Moza Mohammed Rashid Al-toobia',
+  '78367': 'Ibrahim Ahmed Mohammed Al-Busaidi',
+  '81081': 'Jojo Chacko',
+  '81366': 'Ebin Benny',
+  '82889': 'Alanood Amran Ahmed Al-amri',
+  '82900': 'Raya Abdullah Ali Al-Hadhrami',
+  '83813': 'Wesal Suliman Al Dawoodi',
+  '82886': 'Ahmed Rashid Gabash Al-Nasseri',
+  '82906': 'Amaal Salim Said Al-Rawahi',
+  '82877': 'Balqees Hamood Saif Al-Hattali',
+  '82876': 'Hanan Khalaf Khalfan Al-toubi',
+  '82915': 'Hilal Talib Hilal AlBusaidi',
+  '82879': 'Buthaina Mohammed Abdullah Al-hadhrami',
+  '82884': 'Amira Nasser Said Al-Hattali',
+  '84001': 'Silpa Radhakrishnan',
+  '84002': 'Sreeja Molekkudy Kochukunju',
+  '84000': 'Shija Kuruvila',
+  '83829': 'Sangeetha Subhadramma',
+  '83842': 'Pallavi Nagesh',
+  '83865': 'Jomol Puthiyedathukuzhiyil',
+  '83790': 'Sajana P.D',
+  '83791': 'Malu Mathew',
+  '83792': 'Sruthi Pashnath Krishna',
+  '84243': 'Neena N Sam',
+  '84270': 'Shabeena Raheemsab',
+  '84386': 'Jiji Shiju',
+  '83844': 'Bini C.G.',
+  '84796': 'Anitha Puttabasavaiah',
+  '85156': 'Rincy Vadakkan',
+  '83886': 'Michael Rogado',
+  '83782': 'Subitha Bakiyavathani',
+  '83800': 'Jetty Mathew',
+  '83799': 'Josmi George',
+  '84493': 'Niño Thairon Guzman',
+  '41437': 'Prem Anand',
+  '83489': 'Emmanuel Ruel Diaz',
+  '83999': 'Sajithra Balakrishnav Kurup',
+  '83794': 'Chinchu Sebastian',
+  '84902': 'Vennila Velayutham',
+  '85783': 'Hanan Salah',
+  '85643': 'Asmaa EL sayed',
+  '85910': 'Sathya',
+  '85907': 'Sandamali',
+  '85948': 'Ayesha',
+  '86580': 'Hajer Khalfan AL Nasri',
+  '86582': 'Hiba Said AL Toobi',
+  '86577': 'Manar Mohammed AL Hinai',
+  '86583': 'Alathra Khasib AL Sulaimi',
+  '86601': 'Zainab Said AL Zakwani',
+  '86600': 'Hamood Hamed AL Sulaimi',
+  '86604': 'Ammar Talib AL Katri',
+  '86586': 'Sulaiman AL Salmi',
+  '87363': 'Buthaina Ibrahim AL Mahrooqi',
+  '86661': 'Salini',
+  '87074': 'Arya chandran'
+};
+
 // Welcome Screen Logic
 document.getElementById('welcomeForm').addEventListener('submit', function(e) {
   e.preventDefault();
   
-  currentStaffName = document.getElementById('staffName').value.trim();
-  currentStaffID = document.getElementById('staffID').value.trim();
+  const enteredName = document.getElementById('staffName').value.trim();
+  const enteredID = document.getElementById('staffID').value.trim();
   
-  if (currentStaffName && currentStaffID) {
-    document.getElementById('displayStaffName').textContent = currentStaffName;
-    document.getElementById('displayStaffID').textContent = currentStaffID;
-    
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('appContainer').classList.add('active');
-    
-    loadMedications();
-    autoSaveInterval = setInterval(autoBackup, 30000);
+  // Check if staff ID exists in authorized list
+  if (!AUTHORIZED_STAFF[enteredID]) {
+    alert('❌ ACCESS DENIED\n\nStaff ID not authorized. Please contact your administrator.');
+    return;
   }
+  
+  // Verify name matches ID (optional - can be strict or lenient)
+  const authorizedName = AUTHORIZED_STAFF[enteredID];
+  
+  // Use the entered name (allows flexibility) but verify ID is authorized
+  currentStaffName = enteredName;
+  currentStaffID = enteredID;
+  
+  document.getElementById('displayStaffName').textContent = currentStaffName;
+  document.getElementById('displayStaffID').textContent = currentStaffID;
+  
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('appContainer').classList.add('active');
+  
+  loadMedications();
+  autoSaveInterval = setInterval(autoBackup, 30000);
 });
 
 function signOut() {
@@ -1730,24 +1878,28 @@ function printHistory() {
             tr:nth-child(even) { background: #f8f9fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           }
         </style>
-      </head>
-      <body>
-        <h1>🏥 OT Medication Tracker - Transaction History</h1>
-        <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
-        ${filterInfo}
-        ${historyContent}
-      </body>
-    </html>
-  `;
 
-  const printWindow = window.open('', '', 'height=600,width=800');
-  printWindow.document.write(printContent);
-  printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => {
-    printWindow.print();
-    printWindow.close();
-  }, 250);
+```
+  </head>
+  <body>
+    <h1>🏥 OT Medication Tracker - Transaction History</h1>
+    <div class="print-date">Printed on: ${new Date().toLocaleString()}</div>
+    ${filterInfo}
+    ${historyContent}
+  </body>
+</html>
+```
+
+`;
+
+const printWindow = window.open(’’, ‘’, ‘height=600,width=800’);
+printWindow.document.write(printContent);
+printWindow.document.close();
+printWindow.focus();
+setTimeout(() => {
+printWindow.print();
+printWindow.close();
+}, 250);
 }
 
 function deleteHistoryByDateRange() {
@@ -1755,13 +1907,13 @@ if (!verifyDeletePassword()) {
 return;
 }
 
-const dateFrom = prompt('🗑️ DELETE HISTORY BY DATE RANGE\n\nEnter START date (YYYY-MM-DD):\n\nExample: 2025-01-01');
-if (dateFrom === null || dateFrom.trim() === '') {
+const dateFrom = prompt(‘🗑️ DELETE HISTORY BY DATE RANGE\n\nEnter START date (YYYY-MM-DD):\n\nExample: 2025-01-01’);
+if (dateFrom === null || dateFrom.trim() === ‘’) {
 return;
 }
 
 const dateTo = prompt(`🗑️ DELETE HISTORY BY DATE RANGE\n\nStart Date: ${dateFrom}\n\nEnter END date (YYYY-MM-DD):\n\nExample: 2025-01-31`);
-if (dateTo === null || dateTo.trim() === '') {
+if (dateTo === null || dateTo.trim() === ‘’) {
 return;
 }
 
@@ -1769,6 +1921,7 @@ try {
 const fromDate = new Date(dateFrom).setHours(0,0,0,0);
 const toDate = new Date(dateTo).setHours(23,59,59,999);
 
+```
 if (isNaN(fromDate) || isNaN(toDate)) {
   alert('Invalid date format. Please use YYYY-MM-DD format.');
   return;
@@ -1801,9 +1954,10 @@ if (confirm(confirmMsg)) {
   renderHistory();
   alert(`Successfully deleted ${countToDelete} transaction(s).`);
 }
+```
 
 } catch (error) {
-alert('Error processing dates. Please check your input and try again.');
+alert(‘Error processing dates. Please check your input and try again.’);
 }
 }
 
@@ -1812,9 +1966,9 @@ if (!verifyDeletePassword()) {
 return;
 }
 
-const endoKeyword = prompt('🗑️ DELETE ENDO LIST\n\nEnter the keyword to identify Endo medications:\n\n(Transactions containing this keyword in medication name will be deleted)\n\nExample: "ENDO", "Endoscopy", etc.');
+const endoKeyword = prompt(‘🗑️ DELETE ENDO LIST\n\nEnter the keyword to identify Endo medications:\n\n(Transactions containing this keyword in medication name will be deleted)\n\nExample: “ENDO”, “Endoscopy”, etc.’);
 
-if (endoKeyword === null || endoKeyword.trim() === '') {
+if (endoKeyword === null || endoKeyword.trim() === ‘’) {
 return;
 }
 
@@ -1836,37 +1990,39 @@ withdrawHistory = withdrawHistory.filter(transaction =>
 !transaction.medicationName.toLowerCase().includes(keyword)
 );
 
+```
 saveMedications();
 renderHistory();
 alert(`Successfully deleted ${countToDelete} Endo transaction(s).`);
+```
 
 }
 }
 
 window.onclick = function(event) {
-const modal = document.getElementById('historyModal');
+const modal = document.getElementById(‘historyModal’);
 if (event.target == modal) {
 closeHistoryModal();
 }
 }
 
-document.getElementById('medForm').addEventListener('submit', function(e) {
+document.getElementById(‘medForm’).addEventListener(‘submit’, function(e) {
 e.preventDefault();
 
-const locationSelect = document.getElementById('location');
+const locationSelect = document.getElementById(‘location’);
 let finalLocation = locationSelect.value;
 
-if (locationSelect.value === 'Other') {
-finalLocation = document.getElementById('customLocation').value;
+if (locationSelect.value === ‘Other’) {
+finalLocation = document.getElementById(‘customLocation’).value;
 }
 
 const medication = {
-name: document.getElementById('medName').value,
-dosage: document.getElementById('dosage').value,
-pharmacyCode: document.getElementById('pharmacyCode').value,
-mainStock: document.getElementById('mainStock').value,
-quantity: document.getElementById('quantity').value,
-expirationDate: document.getElementById('expirationDate').value,
+name: document.getElementById(‘medName’).value,
+dosage: document.getElementById(‘dosage’).value,
+pharmacyCode: document.getElementById(‘pharmacyCode’).value,
+mainStock: document.getElementById(‘mainStock’).value,
+quantity: document.getElementById(‘quantity’).value,
+expirationDate: document.getElementById(‘expirationDate’).value,
 location: finalLocation
 };
 
@@ -1875,6 +2031,7 @@ if (editingIndex >= 0) {
 const original = window.originalMedication;
 let changes = [];
 
+```
 if (original.name !== medication.name) changes.push(`Name: "${original.name}" → "${medication.name}"`);
 if (original.dosage !== medication.dosage) changes.push(`Dosage: "${original.dosage}" → "${medication.dosage}"`);
 if (original.pharmacyCode !== medication.pharmacyCode) changes.push(`Code: "${original.pharmacyCode}" → "${medication.pharmacyCode}"`);
@@ -1912,6 +2069,7 @@ const formSection = document.getElementById('addMedicationForm');
 const toggleButton = document.querySelector('.add-med-toggle');
 formSection.classList.remove('active');
 toggleButton.classList.remove('active');
+```
 
 } else {
 medications.push(medication);
@@ -1923,7 +2081,7 @@ this.reset();
 handleLocationChange();
 });
 
-window.addEventListener('beforeunload', function(e) {
+window.addEventListener(‘beforeunload’, function(e) {
 saveMedications();
 });
 </script>
